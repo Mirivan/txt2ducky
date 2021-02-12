@@ -1,61 +1,40 @@
 #!/bin/bash
 
-#                             UNLICENSE
-#This is free and unencumbered software released into the public domain.
-
-#Anyone is free to copy, modify, publish, use, compile, sell, or
-#distribute this software, either in source code form or as a compiled
-#binary, for any purpose, commercial or non-commercial, and by any
-#means.
-
-#In jurisdictions that recognize copyright laws, the author or authors
-#of this software dedicate any and all copyright interest in the
-#software to the public domain. We make this dedication for the benefit
-#of the public at large and to the detriment of our heirs and
-#successors. We intend this dedication to be an overt act of
-#relinquishment in perpetuity of all present and future rights to this
-#software under copyright law.
-
-#THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
-#EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
-#MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
-#IN NO EVENT SHALL THE AUTHORS BE LIABLE FOR ANY CLAIM, DAMAGES OR
-#OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
-#ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
-#OTHER DEALINGS IN THE SOFTWARE.
-
-#For more information, please refer to unlicense.org
-
-function help {
-    echo Converts a text file to Ducky Script
-    echo
-    echo Usage:
-    echo \ \ \ \ txt2ducky InputFile [OutputFile]
-    echo
-    echo \ \ \ \ If [OutputFile] not specified it will default to InputFile.txt
-    exit $1
+help(){
+    echo 'txt2ducky @Martinvlba (edit by Mirivan)'
+    echo ''
+    echo './txt2ducky.sh {input_file(.txt)} [output_file]'
+    echo 'Adding STRING method for line and ENTER for executor'
+    exit 1
 }
 
-[ -z $1 ]       && help 1
-[ $1 = --help ] && help 0
-[ $1 = -h ]     && help 0
+NO_FORMAT="\033[0m"
+F_BOLD="\033[1m"
+
+[ -z $1 ] && help
+while getopts ':hs:' opt; do
+  case "$opt" in
+   \?) help
+       ;;
+  esac
+done
 
 filein=$1
 if [ ! -z $2 ]; then
     fileout=$2
 else
-    fileout=$1.txt
+    fileout=$1.rc
 fi
 
 [ ! -e $filein ] && echo File not found: $filein && exit 1
 [ -e $fileout ] && rm $fileout
 
-echo Processing $filein...
-while read -r line; do
-    echo STRING $line >> $fileout
-    echo ENTER        >> $fileout
+echo "[txt2ducky.sh] ${F_BOLD}Rendering $filein...${NO_FORMAT}"
+while IFS= read -r line; do
+    echo "STRING $line" >> $fileout
+    echo "ENTER"  >> $fileout
 done < $filein
 
-echo Complete.
+echo "[txt2ducky.sh] ${F_BOLD}Complete.${NO_FORMAT}"
 
 exit 0
